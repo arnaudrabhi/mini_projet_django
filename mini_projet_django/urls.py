@@ -17,10 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from mini_projet_equipement import views
 from mini_projet_equipement.views import login_view, logout_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
+
+    # Equipment App URLs
+    path('equipment/', views.equipment_list, name='equipment_list'),
+    path('equipment/<int:pk>/', views.equipment_detail, name='equipment_detail'),
+    path('equipment/create/', views.equipment_create, name='equipment_create'),
+    path('equipment/<int:pk>/update/', views.equipment_update, name='equipment_update'),
+    path('equipment/<int:pk>/delete/', views.equipment_delete, name='equipment_delete'),
 ]

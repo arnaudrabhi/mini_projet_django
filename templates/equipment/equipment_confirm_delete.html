@@ -1,0 +1,13 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2 class="mb-4">Confirm Deletion</h2>
+  <div class="alert alert-danger">
+    <p>êtes vous sûr de vouloir supprimer l'équipement "{{ equipment.name }}"?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Oui, Supprimer</button>
+      <a class="btn btn-secondary" href="{% url 'equipment_list' %}">annuler</a>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2 class="mb-4">Equipment List</h2>
+  <ul class="list-group">
+    {% for equipment in equipments %}
+      <li class="list-group-item"><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <a class="btn btn-primary mt-3" href="{% url 'equipment_create' %}">Create New Equipment</a>
+{% endblock %}

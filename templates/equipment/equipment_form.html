@@ -1,0 +1,30 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2 class="mb-4">{{ form_title }}</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.name.label_tag }}
+      {{ form.name }}
+    </div>
+    <div class="form-group">
+      {{ form.location_room.label_tag }}
+      {{ form.location_room }}
+    </div>
+    <div class="form-group">
+      {{ form.owner.label_tag }}
+      {{ form.owner }}
+    </div>
+    <div class="form-group">
+      {{ form.holder.label_tag }}
+      {{ form.holder }}
+    </div>
+    <div class="form-group">
+      {{ form.accessories.label_tag }}
+      {{ form.accessories }}
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a class="btn btn-secondary" href="{% url 'equipment_list' %}">Back to List</a>
+  </form>
+{% endblock %}
