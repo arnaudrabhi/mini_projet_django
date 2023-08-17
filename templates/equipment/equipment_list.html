@@ -1,11 +1,48 @@
 {% extends 'master.html' %}
 
+{% block title %}Liste des Équipements{% endblock %}
+
 {% block content %}
-  <h2 class="mb-4">Equipment List</h2>
+  <h2 class="mb-4">Liste des Équipements</h2>
+
+<form method="get" class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <label for="filter_by" class="mr-2">Filtrer par :</label>
+        <select name="filter_by" id="filter_by" class="form-control">
+            <option value="">-- Sélectionner --</option>
+            <option value="budget" {% if selected_filter == 'budget' %}selected{% endif %}>Budget</option>
+            <option value="owner" {% if selected_filter == 'owner' %}selected{% endif %}>Propriétaire</option>
+            <option value="holder" {% if selected_filter == 'holder' %}selected{% endif %}>Détenteur</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="order_by" class="mr-2">Trier par :</label>
+        <select name="order_by" id="order_by" class="form-control">
+            <option value="">-- Sélectionner --</option>
+            <option value="name" {% if selected_order == 'name' %}selected{% endif %}>Nom</option>
+            <option value="budget" {% if selected_order == 'budget' %}selected{% endif %}>Budget</option>
+            <option value="owner" {% if selected_order == 'owner' %}selected{% endif %}>Propriétaire</option>
+            <option value="holder" {% if selected_order == 'holder' %}selected{% endif %}>Détenteur</option>
+            <!-- Add more options as needed -->
+        </select>
+    </div>
+    <button type="submit" class="btn btn-secondary ml-2">Filtrer & Trier</button>
+</form>
+
   <ul class="list-group">
     {% for equipment in equipments %}
-      <li class="list-group-item"><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></li>
+      <li class="list-group-item">
+        <h5><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></h5>
+        <p>Budget: {{ equipment.from_budget }}</p>
+        <p>Propriétaire: {{ equipment.owner }}</p>
+        <p>Détenteur: {{ equipment.holder }}</p>
+        <p>Nombre d'accessoires: {{ equipment.accessories.count }}</p>
+        <a href="{% url 'equipment_update' equipment.pk %}" class="btn btn-sm btn-primary">Modifier</a>
+        <a href="{% url 'equipment_delete' equipment.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+      </li>
     {% endfor %}
   </ul>
-  <a class="btn btn-primary mt-3" href="{% url 'equipment_create' %}">Create New Equipment</a>
+
+  <a class="btn btn-primary mt-3" href="{% url 'equipment_create' %}">Créer un Nouvel Équipement</a>
 {% endblock %}

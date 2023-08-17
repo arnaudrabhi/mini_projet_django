@@ -1,36 +1,55 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LoginView, LogoutView
+from django.db.models import Subquery, OuterRef
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Equipment
-from .forms import EquipmentForm
+from django.urls import reverse_lazy
+from django.views.generic import CreateView
+
+from .models import Equipment, Teacher, Accessory, Purchase
+from .forms import EquipmentForm, TeacherForm, AccessoryForm
 
 
-# LOGIN
-
-def login_view(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('home')  # Replace 'home' with your desired URL
-        else:
-            messages.error(request, 'Invalid username or password.')
-
-    return render(request, 'auth/login.html')
+class TeacherLoginView(LoginView):
+    template_name = 'teacher/teacher_login.html'
+    redirect_authenticated_user = True
 
 
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+class TeacherLogoutView(LogoutView):
+    next_page = reverse_lazy('teacher_login')
 
 
 def equipment_list(request):
     equipments = Equipment.objects.all()
-    return render(request, 'equipment/equipment_list.html', {'equipments': equipments})
+    filter_by = request.GET.get('filter_by')
+    order_by = request.GET.get('order_by')
+
+    if filter_by:
+        if filter_by == 'budget':
+            equipments = equipments.annotate(
+                latest_budget=Subquery(
+                    Purchase.objects.filter(
+                        equipment=OuterRef('pk')
+                    ).order_by('-purchase_date').values('from_budget')[:1]
+                )
+            ).exclude(latest_budget=None).order_by('latest_budget')
+
+        elif filter_by == 'owner':
+            equipments = equipments.order_by('owner__last_name', 'owner__first_name')
+        elif filter_by == 'holder':
+            equipments = equipments.order_by('holder__last_name', 'holder__first_name')
+
+    if order_by:
+        equipments = equipments.order_by(order_by)
+
+    context = {
+        'equipments': equipments,
+        'selected_filter': filter_by,
+        'selected_order': order_by,
+    }
+
+    return render(request, 'equipment/equipment_list.html', context)
 
 
 def equipment_detail(request, pk):
