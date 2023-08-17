@@ -1,0 +1,11 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2>Confirmer la Suppression</h2>
+  <p>Voulez-vous vraiment supprimer l'enseignant "{{ teacher.get_civility_display }} {{ teacher.last_name }} {{ teacher.first_name }}" ?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Oui, Supprimer</button>
+  </form>
+  <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Annuler</a>
+{% endblock %}

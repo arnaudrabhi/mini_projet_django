@@ -1,0 +1,13 @@
+{% extends 'master.html' %}
+
+{% block title %}Liste des Accessoires{% endblock %}
+
+{% block content %}
+  <h2>Liste des Accessoires</h2>
+  <ul>
+    {% for accessory in accessories %}
+      <li><a href="{% url 'accessory_detail' accessory.pk %}">{{ accessory.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'accessory_create' %}" class="btn btn-primary">Créer un Accessoire</a>
+{% endblock %}

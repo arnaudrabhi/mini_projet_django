@@ -1,0 +1,14 @@
+{% extends 'master.html' %}
+
+{% block title %}Détails de l'Accessoire{% endblock %}
+
+{% block content %}
+  <h2>Détails de l'Accessoire</h2>
+  <p>Nom: {{ accessory.name }}</p>
+  <p>Équipement: {{ accessory.equipment }}</p>
+  <p>État: {{ accessory.get_condition_display }}</p>
+  <p>Commentaire: {{ accessory.comment }}</p>
+  <a href="{% url 'accessory_update' accessory.pk %}" class="btn btn-primary">Modifier</a>
+  <a href="{% url 'accessory_delete' accessory.pk %}" class="btn btn-danger">Supprimer</a>
+  <a href="{% url 'accessory_list' %}" class="btn btn-secondary">Retour à la Liste</a>
+{% endblock %}

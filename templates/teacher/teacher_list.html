@@ -1,0 +1,11 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2>Liste des Enseignants</h2>
+  <ul>
+    {% for teacher in teachers %}
+      <li><a href="{% url 'teacher_detail' teacher.pk %}">{{ teacher.get_civility_display }} {{ teacher.last_name }} {{ teacher.first_name }}</a></li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'teacher_create' %}" class="btn btn-primary">Créer un Enseignant</a>
+{% endblock %}

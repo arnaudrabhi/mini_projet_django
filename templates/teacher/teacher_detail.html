@@ -1,0 +1,12 @@
+{% extends 'master.html' %}
+
+{% block content %}
+  <h2>Détails de l'Enseignant</h2>
+  <p>Civilité: {{ teacher.get_civility_display }}</p>
+  <p>Nom: {{ teacher.last_name }}</p>
+  <p>Prénom: {{ teacher.first_name }}</p>
+  <p>Email: {{ teacher.email }}</p>
+  <a href="{% url 'teacher_update' teacher.pk %}" class="btn btn-primary">Modifier</a>
+  <a href="{% url 'teacher_delete' teacher.pk %}" class="btn btn-danger">Supprimer</a>
+  <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Retour à la Liste</a>
+{% endblock %}
