@@ -1,15 +1,10 @@
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LoginView, LogoutView
-from django.db.models import Subquery, OuterRef
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.db import models
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
-
-from .models import Equipment, Teacher, Accessory, Purchase
+from .models import Equipment, Teacher, Accessory
 from .forms import EquipmentForm, TeacherForm, AccessoryForm
-
+from django.shortcuts import render
 
 class TeacherLoginView(LoginView):
     template_name = 'teacher/teacher_login.html'
@@ -21,24 +16,27 @@ class TeacherLogoutView(LogoutView):
 
 
 def equipment_list(request):
-    equipments = Equipment.objects.all()
     filter_by = request.GET.get('filter_by')
+    filter_value = request.GET.get('filter_value')
     order_by = request.GET.get('order_by')
 
-    if filter_by:
-        if filter_by == 'budget':
-            equipments = equipments.annotate(
-                latest_budget=Subquery(
-                    Purchase.objects.filter(
-                        equipment=OuterRef('pk')
-                    ).order_by('-purchase_date').values('from_budget')[:1]
-                )
-            ).exclude(latest_budget=None).order_by('latest_budget')
+    equipments = Equipment.objects.all()
+    filter_values = []
 
-        elif filter_by == 'owner':
-            equipments = equipments.order_by('owner__last_name', 'owner__first_name')
-        elif filter_by == 'holder':
-            equipments = equipments.order_by('holder__last_name', 'holder__first_name')
+    if filter_by == 'budget':
+        # Add budget options here based on your data
+        pass
+    elif filter_by == 'holder':
+        filter_values = list(set(equipments.values_list('holder__first_name', flat=True)))
+    elif filter_by == 'owner':
+        filter_values = list(set(equipments.values_list('owner__first_name', flat=True)))
+
+    if filter_by == 'budget':
+        equipments = equipments.annotate(latest_budget=models.Max('purchases__from_budget'))
+    elif filter_by == 'holder':
+        equipments = equipments.filter(holder__first_name=filter_value)
+    elif filter_by == 'owner':
+        equipments = equipments.filter(owner__first_name=filter_value)
 
     if order_by:
         equipments = equipments.order_by(order_by)
@@ -46,7 +44,9 @@ def equipment_list(request):
     context = {
         'equipments': equipments,
         'selected_filter': filter_by,
+        'selected_value': filter_value,
         'selected_order': order_by,
+        'filter_values': filter_values,
     }
 
     return render(request, 'equipment/equipment_list.html', context)
