@@ -1,0 +1,59 @@
+{% extends 'master.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+  <div class="container">
+    <div class="jumbotron text-center mt-5">
+      <h1>Bienvenue dans la Gestion des Équipements Scolaires</h1>
+      <p class="lead">Gérez efficacement les équipements scolaires, les enseignants et plus encore.</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card mb-4">
+          <div class="card-header">Liens Rapides</div>
+          <div class="card-body">
+            <ul class="list-unstyled">
+              <li><a href="{% url 'equipment_list' %}">Équipements</a></li>
+              <li><a href="{% url 'teacher_list' %}">Enseignants</a></li>
+              <li><a href="{% url 'accessory_list' %}">Accessoires</a></li>
+
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="card mb-4">
+          <div class="card-header">Activité Récente</div>
+          <div class="card-body">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">Statistiques</div>
+          <div class="card-body">
+            <p>Nombre total d'équipements: {{ total_equipment_count }}</p>
+            <p>Nombre d'enseignants: {{ total_teacher_count }}</p>
+            <p>Nombre total d'accessoires: {{ total_accessory_count }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">Recherche et Filtrage</div>
+          <div class="card-body">
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,33 +1,55 @@
 {% extends 'master.html' %}
-
-{% block title %}{% if action == 'Créer' %}Créer un{% else %}Modifier{% endif %} Enseignant{% endblock %}
+{% load widget_tweaks %}
 
 {% block content %}
-  <h2>{% if action == 'Créer' %}Créer un{% else %}Modifier{% endif %} Enseignant</h2>
-  <form method="post" class="form">
-    {% csrf_token %}
-    <div class="form-group">
-      {{ form.civility.label_tag }}
-      {{ form.civility }}
+    <div class="container">
+        <h2 class="mb-4">{{ form_title }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="id_civility">Civilité:</label>
+                        {% render_field form.civility|attr:"class:form-control" %}
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="id_first_name">Prénom:</label>
+                        {% render_field form.first_name|attr:"class:form-control" %}
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="id_last_name">Nom de famille:</label>
+                        {% render_field form.last_name|attr:"class:form-control" %}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="id_email">Email:</label>
+                    {% render_field form.email|attr:"class:form-control" %}
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="form-group">
+                    <label for="id_password">Mot de passe:</label>
+                    {% render_field form.password|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_confirm_password">Confirmer le mot de passe:</label>
+                    <input type="password" name="confirm_password" class="form-control" required>
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    <a class="btn btn-secondary" href="{% url 'teacher_list' %}">Retour à la liste</a>
+                </div>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-      {{ form.first_name.label_tag }}
-      {{ form.first_name }}
-    </div>
-    <div class="form-group">
-      {{ form.last_name.label_tag }}
-      {{ form.last_name }}
-    </div>
-    <div class="form-group">
-      {{ form.email.label_tag }}
-      {{ form.email }}
-    </div>
-    <div class="form-group">
-      {{ form.password.label_tag }}
-      {{ form.password }}
-    </div>
-    <button type="submit" class="btn btn-primary">Enregistrer</button>
-  </form>
-  <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Retour à la Liste</a>
 {% endblock %}
-

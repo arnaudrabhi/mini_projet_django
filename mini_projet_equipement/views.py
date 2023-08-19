@@ -65,7 +65,10 @@ def equipment_create(request):
             return redirect('equipment_list')
     else:
         form = EquipmentForm()
-    return render(request, 'equipment/equipment_form.html', {'form': form})
+
+    form_title = "Enregistrer un nouvel équipement"  # Set the form title
+    context = {'form': form, 'form_title': form_title}
+    return render(request, 'equipment/equipment_form.html', context)
 
 
 def equipment_update(request, pk):
@@ -77,7 +80,11 @@ def equipment_update(request, pk):
             return redirect('equipment_list')
     else:
         form = EquipmentForm(instance=equipment)
-    return render(request, 'equipment/equipment_form.html', {'form': form})
+
+    form_title = "Éditer un équipement"  # Set the form title
+    context = {'form': form, 'form_title': form_title}
+
+    return render(request, 'equipment/equipment_form.html', context)
 
 
 def equipment_delete(request, pk):
@@ -102,11 +109,21 @@ def teacher_create(request):
     if request.method == 'POST':
         form = TeacherForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('teacher_list')
+            password = form.cleaned_data['password']
+            confirm_password = request.POST.get('confirm_password')
+
+            if password == confirm_password:
+                teacher = form.save()
+                # ... (other logic)
+                return redirect('teacher_list')
+            else:
+                messages.error(request, "Les mots de passe ne correspondent pas.")
+        else:
+            messages.error(request, "Veuillez corriger les erreurs dans le formulaire.")
     else:
         form = TeacherForm()
-    return render(request, 'teacher/teacher_form.html', {'form': form, 'action': 'Créer'})
+
+    return render(request, 'teacher/teacher_form.html', {'form': form, 'form_title': 'Créer un Enseignant'})
 
 
 def teacher_update(request, pk):

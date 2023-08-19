@@ -1,30 +1,52 @@
 {% extends 'master.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
-  <h2 class="mb-4">{{ form_title }}</h2>
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-      {{ form.name.label_tag }}
-      {{ form.name }}
-    </div>
-    <div class="form-group">
-      {{ form.location_room.label_tag }}
-      {{ form.location_room }}
-    </div>
-    <div class="form-group">
-      {{ form.owner.label_tag }}
-      {{ form.owner }}
-    </div>
-    <div class="form-group">
-      {{ form.holder.label_tag }}
-      {{ form.holder }}
-    </div>
-    <div class="form-group">
-      {{ form.accessories.label_tag }}
-      {{ form.accessories }}
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
-    <a class="btn btn-secondary" href="{% url 'equipment_list' %}">Back to List</a>
-  </form>
+<div class="container">
+    <h2 class="mb-4">{{ form_title }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_name">Nom:</label>
+                    {% render_field form.name|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_location_room">Salle de localisation:</label>
+                    {% render_field form.location_room|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_owner">Responsable:</label>
+                    {% render_field form.owner|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_holder">Détenteur actuel:</label>
+                    {% render_field form.holder|attr:"class:form-control" %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="id_accessories">Accessoires:</label>
+                    {% render_field form.accessories|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_from_budget">Budget utilisé:</label>
+                    {% render_field form.from_budget|attr:"class:form-control" %}
+                </div>
+                <div class="form-group">
+                    <label for="id_purchase_date">Date d'achat:</label>
+                    {% render_field form.purchase_date|attr:"class:form-control" %}
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a class="btn btn-secondary" href="{% url 'equipment_list' %}">Retour à la liste</a>
+            </div>
+        </div>
+    </form>
+</div>
 {% endblock %}
