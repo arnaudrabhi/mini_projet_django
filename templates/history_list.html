@@ -1,0 +1,37 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Historique des Passations</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Équipement</th>
+                    <th>Ancien Titulaire</th>
+                    <th>Nouveau Titulaire</th>
+                    <th>Accessoires Présents</th>
+                    <th>Raison du Changement</th>
+                    <th>Commentaire</th>
+                    <th>Emplacement</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for history in histories %}
+                    <tr>
+                        <td>{{ history.holding_change_date }}</td>
+                        <td>{{ history.equipment.name }}</td>
+                        <td>{{ history.old_holder }}</td>
+                        <td>{{ history.new_holder }}</td>
+                        <td>{% if history.are_accessories_present %}Oui{% else %}Non{% endif %}</td>
+                        <td>{{ history.change_reason }}</td>
+                        <td>{{ history.comment }}</td>
+                        <td>{{ history.location }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

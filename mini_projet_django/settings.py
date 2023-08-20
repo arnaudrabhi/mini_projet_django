@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mini_projet_equipement'
+    'mini_projet_equipement',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -97,7 +98,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = [
+    'mini_projet_equipement.authentification.TeacherBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AUTH_USER_MODEL = 'mini_projet_equipement.Teacher'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

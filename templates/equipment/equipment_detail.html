@@ -8,7 +8,11 @@
       <p class="card-text"><strong>Location Room:</strong> {{ equipment.location_room }}</p>
       <p class="card-text"><strong>Owner:</strong> {{ equipment.owner }}</p>
       <p class="card-text"><strong>Holder:</strong> {{ equipment.holder }}</p>
-      <p class="card-text"><strong>Accessories:</strong> {{ equipment.accessories.all|join:", " }}</p>
+      <p class="card-text"><strong>Accessories:</strong>
+        {% for accessory in equipment.accessories.all %}
+          <a href="{% url 'accessory_detail' accessory.pk %}" class="btn btn-link">{{ accessory.name }}</a>
+        {% endfor %}
+      </p>
       <a class="btn btn-primary" href="{% url 'equipment_update' equipment.pk %}">Edit</a>
       <a class="btn btn-danger" href="{% url 'equipment_delete' equipment.pk %}">Delete</a>
       <a class="btn btn-secondary" href="{% url 'equipment_list' %}">Back to List</a>

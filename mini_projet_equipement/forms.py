@@ -1,6 +1,6 @@
 from django import forms
 
-from .enums import BudgetChoices
+from .enums import BudgetChoices, RoomChoices
 from .models import Equipment, Teacher, Accessory, Purchase
 
 
@@ -12,14 +12,32 @@ class EquipmentForm(forms.ModelForm):
         model = Equipment
         fields = ['name', 'location_room', 'owner', 'holder', 'accessories']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.purchase_form = PurchaseForm(*args, **kwargs)
+
+    def is_valid(self):
+        return super().is_valid() and self.purchase_form.is_valid()
+
+    def clean_owner(self):
+        owner = self.cleaned_data['owner']
+        if owner == 'lycee':
+            return None
+        return owner
+
     def save(self, commit=True):
         equipment = super().save(commit=commit)
         if commit:
-            from_budget = self.cleaned_data.get('from_budget')
-            purchase_date = self.cleaned_data.get('purchase_date')
-            if from_budget and purchase_date:
-                Purchase.objects.create(equipment=equipment, from_budget=from_budget, purchase_date=purchase_date)
+            purchase = self.purchase_form.save(commit=False)
+            purchase.equipment = equipment
+            purchase.save()
         return equipment
+
+
+class PurchaseForm(forms.ModelForm):
+    class Meta:
+        model = Purchase
+        fields = ['from_budget', 'purchase_date']
 
 
 class TeacherForm(forms.ModelForm):
@@ -29,6 +47,19 @@ class TeacherForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.pk:
+            self.fields['password'].required = False
+
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk and not password:
+            return instance.password
+        return password
 
 
 class AccessoryForm(forms.ModelForm):
@@ -43,3 +74,29 @@ class AccessoryForm(forms.ModelForm):
             accessory.save()
 
         return accessory
+
+
+class EquipmentTransferForm(forms.Form):
+    old_holder = forms.ModelChoiceField(queryset=Teacher.objects.all(), label='Ancien Titulaire')
+    new_holder = forms.ModelChoiceField(queryset=Teacher.objects.all(), label='Nouveau Titulaire')
+    are_accessories_present = forms.BooleanField(required=False, label='Accessoires Présents')
+    comment = forms.CharField(widget=forms.Textarea, label='Commentaire')
+    change_reason = forms.CharField(widget=forms.Textarea, label='Raison du Changement')
+    location = forms.CharField(max_length=255, label='Emplacement')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        old_holder = cleaned_data.get('old_holder')
+        new_holder = cleaned_data.get('new_holder')
+
+        if old_holder == new_holder:
+            self.add_error('new_holder', "Le nouveau titulaire doit être différent de l'ancien titulaire.")
+
+
+class RetrieveEquipmentForm(forms.Form):
+    comment = forms.CharField(label="Commentaire", widget=forms.Textarea)
+    are_accessories_present = forms.BooleanField(label="Accessoires présents", required=False)
+    holding_change_date = forms.DateField(label="Date de récupération", widget=forms.DateInput(attrs={'type': 'date'}))
+    change_reason = forms.CharField(label="Raison du changement", widget=forms.Textarea)
+    location = forms.ChoiceField(label="Emplacement", choices=[(choice.value, choice.value) for choice in RoomChoices])
+
