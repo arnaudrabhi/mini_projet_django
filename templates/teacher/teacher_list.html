@@ -2,10 +2,35 @@
 
 {% block content %}
   <h2>Liste des Enseignants</h2>
-  <ul>
-    {% for teacher in teachers %}
-      <li><a href="{% url 'teacher_detail' teacher.pk %}">{{ teacher.get_civility_display }} {{ teacher.last_name }} {{ teacher.first_name }}</a></li>
-    {% endfor %}
-  </ul>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Civilité</th>
+          <th>Nom</th>
+          <th>Prénom</th>
+          <th>Email</th>
+          <th>Admin</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for teacher in teachers %}
+          <tr>
+            <td>{{ teacher.civility }}</td>
+            <td>{{ teacher.last_name }}</td>
+            <td>{{ teacher.first_name }}</td>
+            <td>{{ teacher.email }}</td>
+            <td>{% if teacher.is_staff %}Oui{% else %}Non{% endif %}</td>
+            <td>
+              <a href="{% url 'teacher_detail' teacher.pk %}" class="btn btn-info btn-sm">Détails</a>
+              <a href="{% url 'teacher_update' teacher.pk %}" class="btn btn-secondary btn-sm">Modifier</a>
+              <a href="{% url 'teacher_delete' teacher.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   <a href="{% url 'teacher_create' %}" class="btn btn-primary">Créer un Enseignant</a>
 {% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'master.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <div class="container">
+        <h2 class="mb-4">Récupérer un Équipement</h2>
+        <form method="post" class="needs-validation">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-check-label" for="{{ form.comment.id_for_label }}">Commentaire:</label>
+                {% render_field form.comment|attr:"class:form-control" %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label" for="{{ form.are_accessories_present.id_for_label }}">Accessoires présents:</label>
+                {% render_field form.are_accessories_present|attr:"class:form-check-input" %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label" for="{{ form.holding_change_date.id_for_label }}">Date de récupération:</label>
+                {% render_field form.holding_change_date|attr:"class:form-control" %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label" for="{{ form.change_reason.id_for_label }}">Raison du changement:</label>
+                {% render_field form.change_reason|attr:"class:form-control" %}
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label" for="{{ form.location.id_for_label }}">Emplacement:</label>
+                {% render_field form.location|attr:"class:form-control" %}
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-primary">Valider</button>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <a class="btn btn-secondary" href="{% url 'equipment_list' %}">Retour à la liste</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
