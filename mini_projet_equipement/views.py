@@ -13,6 +13,10 @@ from .models import Equipment, Teacher, Accessory, HolderHistory, Purchase
 from .forms import EquipmentForm, TeacherForm, AccessoryForm, EquipmentTransferForm, RetrieveEquipmentForm
 from django.shortcuts import render
 
+# Teacher utilisé pour représenter la salle de stockage pour le holder de l'équipement
+storage_holder, created = Teacher.objects.get_or_create(email='storage@example.com',
+                                                        defaults={'first_name': 'Storage', 'last_name': 'Room'})
+
 
 def home(request):
     if request.user.is_authenticated:
@@ -59,9 +63,6 @@ def equipment_list(request):
     selected_order = request.GET.get('order_by', '')
 
     equipments = Equipment.objects.all()
-
-    storage_holder, created = Teacher.objects.get_or_create(email='storage@example.com',
-                                                            defaults={'first_name': 'Storage', 'last_name': 'Room'})
 
     rented_equipments = Equipment.objects.exclude(holder_id=storage_holder.id)
 
@@ -128,21 +129,24 @@ def equipment_detail(request, pk):
 @login_required
 def equipment_create(request):
     if request.method == 'POST':
-        form = EquipmentForm(request.POST)
-        if not form.is_valid():
-            print(form.errors)
+        form = EquipmentForm(request.user, request.POST)
+        form.instance.location_room = RoomChoices.STORAGE.name  # Set default value here
+        if form.instance.owner == 'lycee':
+            form.instance.owner = storage_holder
+
         if form.is_valid():
 
-            owner = form.cleaned_data['owner']
-            if owner == 'Lycée':
-                form.instance.owner = None
             form.save()
             return redirect('equipment_list')
-
+        else:
+            print(form.errors)
     else:
-        form = EquipmentForm()
+        initial_location = RoomChoices.STORAGE.name
+        form = EquipmentForm(request.user, initial={'location_room': initial_location})
+        form.instance.location_room = RoomChoices.STORAGE.name
 
     form.fields['location_room'].choices = [(choice.value, choice.name) for choice in RoomChoices]
+    form.fields['location_room'].widget.attrs['readonly'] = True
 
     form_title = "Enregistrer un nouvel équipement"
     context = {'form': form, 'form_title': form_title}
@@ -155,7 +159,7 @@ def equipment_update(request, pk):
     purchase = Purchase.objects.filter(equipment=equipment).first()
 
     if request.method == 'POST':
-        form = EquipmentForm(request.POST, instance=equipment)
+        form = EquipmentForm(request.user, request.POST, instance=equipment)
         if not form.is_valid():
             print(form.errors)
         if form.is_valid():
@@ -170,7 +174,7 @@ def equipment_update(request, pk):
             'from_budget': purchase.from_budget if purchase else None,
             'purchase_date': purchase.purchase_date if purchase else None,
         }
-        form = EquipmentForm(instance=equipment, initial=initial_data)
+        form = EquipmentForm(request.user, instance=equipment, initial=initial_data)
 
     form.fields['location_room'].choices = [(choice.value, choice.name) for choice in RoomChoices]
 
@@ -247,9 +251,9 @@ def return_to_storage(request, equipment_id):
         new_holder=storage_holder,
         equipment=equipment,
         are_accessories_present=True,
-        comment='Returned to storage',
+        comment='Retour au stockage',
         holding_change_date=timezone.now(),
-        change_reason='Returned to storage',
+        change_reason='Retour au stockage',
         location=equipment.location_room
     )
 
@@ -263,8 +267,6 @@ def retrieve_equipment(request, equipment_id):
     equipment = get_object_or_404(Equipment, pk=equipment_id)
 
     new_holder = request.user
-    storage_holder, created = Teacher.objects.get_or_create(email='storage@example.com',
-                                                            defaults={'first_name': 'Storage', 'last_name': 'Room'})
 
     if request.method == 'POST':
         form = RetrieveEquipmentForm(request.POST)
@@ -304,7 +306,8 @@ def history_list_view(request):
 
 @login_required
 def teacher_list(request):
-    teachers = Teacher.objects.all()
+    teachers = Teacher.objects.exclude(id=storage_holder.id)
+
     return render(request, 'teacher/teacher_list.html', {'teachers': teachers})
 
 

@@ -3,38 +3,45 @@
 {% block title %}Liste des Accessoires{% endblock %}
 
 {% block content %}
-  <h2>Liste des Accessoires</h2>
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Équipement</th>
-          <th>Condition</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for accessory in accessories %}
-          <tr>
-            <td>{{ accessory.name }}</td>
-            <td>
-              {% if accessory.equipment %}
-                <a href="{% url 'equipment_detail' accessory.equipment.pk %}">{{ accessory.equipment.name }}</a>
-              {% else %}
-                N/A
-              {% endif %}
-            </td>
-            <td>{{ accessory.condition }}</td>
-            <td>
-              <a href="{% url 'accessory_detail' accessory.pk %}" class="btn btn-info btn-sm">Détails</a>
-              <a href="{% url 'accessory_update' accessory.pk %}" class="btn btn-secondary btn-sm">Modifier</a>
-              <a href="{% url 'accessory_delete' accessory.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  <a href="{% url 'accessory_create' %}" class="btn btn-primary">Créer un Accessoire</a>
+    <h2>Liste des Accessoires</h2>
+    <div class="table-responsive">
+        {% if accessories %}
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Équipement</th>
+                    <th>Condition</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for accessory in accessories %}
+                    <tr>
+                        <td>{{ accessory.name }}</td>
+                        <td>
+                            {% if accessory.equipment %}
+                                <a href="{% url 'equipment_detail' accessory.equipment.pk %}">{{ accessory.equipment.name }}</a>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{ accessory.condition }}</td>
+                        <td>
+                            <a href="{% url 'accessory_detail' accessory.pk %}" class="btn btn-info btn-sm">Détails</a>
+                            <a href="{% url 'accessory_update' accessory.pk %}" class="btn btn-secondary btn-sm">Modifier</a>
+                            <a href="{% url 'accessory_delete' accessory.pk %}"
+                               class="btn btn-danger btn-sm">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        {% else %}
+            <p>Aucun accessoire enregistré</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'accessory_create' %}" class="btn btn-primary">Créer un Accessoire</a>
 {% endblock %}

@@ -4,6 +4,11 @@ from .enums import BudgetChoices, RoomChoices
 from .models import Equipment, Teacher, Accessory, Purchase
 
 
+# Teacher utilisé pour représenter la salle de stockage pour le holder de l'équipement
+storage_holder, created = Teacher.objects.get_or_create(email='storage@example.com',
+                                                        defaults={'first_name': 'Storage', 'last_name': 'Room'})
+
+
 class EquipmentForm(forms.ModelForm):
     from_budget = forms.ChoiceField(choices=[(choice.name, choice.value) for choice in BudgetChoices], required=False)
     purchase_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
@@ -12,9 +17,14 @@ class EquipmentForm(forms.ModelForm):
         model = Equipment
         fields = ['name', 'location_room', 'owner', 'holder', 'accessories']
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.purchase_form = PurchaseForm(*args, **kwargs)
+        self.user = user
+
+        if not self.instance.pk and not self.user.is_staff:
+            self.fields['location_room'].initial = RoomChoices.STORAGE.name
+            self.fields['location_room'].widget.attrs['readonly'] = True
 
     def is_valid(self):
         return super().is_valid() and self.purchase_form.is_valid()
@@ -22,7 +32,7 @@ class EquipmentForm(forms.ModelForm):
     def clean_owner(self):
         owner = self.cleaned_data['owner']
         if owner == 'lycee':
-            return None
+            return storage_holder.id
         return owner
 
     def save(self, commit=True):
@@ -77,10 +87,13 @@ class AccessoryForm(forms.ModelForm):
 
 
 class EquipmentTransferForm(forms.Form):
+    storage_holder, created = Teacher.objects.get_or_create(email='storage@example.com',
+                                                            defaults={'first_name': 'Storage', 'last_name': 'Room'})
+
     old_holder = forms.ModelChoiceField(queryset=Teacher.objects.all(), label='Ancien Titulaire')
-    new_holder = forms.ModelChoiceField(queryset=Teacher.objects.all(), label='Nouveau Titulaire')
+    new_holder = forms.ModelChoiceField(queryset=Teacher.objects.exclude(id=storage_holder.id), label='Nouveau Titulaire')
     are_accessories_present = forms.BooleanField(required=False, label='Accessoires Présents')
-    comment = forms.CharField(widget=forms.Textarea, label='Commentaire')
+    comment = forms.CharField(widget=forms.Textarea, label='État des accessoires')
     change_reason = forms.CharField(widget=forms.Textarea, label='Raison du Changement')
     location = forms.CharField(max_length=255, label='Emplacement')
 

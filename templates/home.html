@@ -19,24 +19,14 @@
                                 <li><a href="{% url 'equipment_list' %}">Équipements</a></li>
                                 <li><a href="{% url 'teacher_list' %}">Enseignants</a></li>
                                 <li><a href="{% url 'accessory_list' %}">Accessoires</a></li>
+                                <li><a href="{% url 'history_list' %}">Historique des passations</a></li>
 
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-8">
-                    <div class="card mb-4">
-                        <div class="card-header">Activité Récente</div>
-                        <div class="card-body">
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
+                <div class="col-md">
                     <div class="card mb-4">
                         <div class="card-header">Statistiques</div>
                         <div class="card-body">
@@ -46,49 +36,49 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-header">Recherche et Filtrage</div>
-                        <div class="card-body">
-
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="row">
                 <div class="container">
                     <h2>Mes Équipements</h2>
-                    <table class="table table-bordered">
-                        <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Emplacement</th>
-                            <th>Accessoires</th>
-                            <th>Depuis le budget</th>
-                            <th>Date d'achat</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for equipment in user_equipment %}
+                    {% if user_equipment %}
+                        <table class="table table-bordered">
+                            <thead>
                             <tr>
-                                <td>{{ equipment.name }}</td>
-                                <td>{{ equipment.location_room }}</td>
-                                <td>{{ equipment.accessories }}</td>
-                                <td>{{ equipment.from_budget }}</td>
-                                <td>{{ equipment.purchase_date }}</td>
-                                <td>
-                                    <a href="{% url 'equipment_transfer' equipment.id %}" class="btn btn-primary">Passation
-                                        du matériel</a>
-                                    <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
-                                    stockage</a>
-                                    <a href="{% url 'equipment_detail' equipment.id %}" class="btn btn-secondary">Détails</a>
-                                </td>
+                                <th>Nom</th>
+                                <th>Emplacement</th>
+                                <th>Accessoires</th>
+                                <th>Actions</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {% for equipment in user_equipment %}
+                                <tr>
+                                    <td>{{ equipment.name }}</td>
+                                    <td>{{ equipment.location_room }}</td>
+                                    <td>
+                                        {% if equipment.accessories.exists %}
+                                            {% for accessory in equipment.accessories.all %}
+                                                {{ accessory.name }}
+                                                {% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            Pas d'accessoires
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'equipment_transfer' equipment.id %}" class="btn btn-primary">Passation
+                                            du matériel</a>
+                                        <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour
+                                            au stockage</a>
+                                        <a href="{% url 'equipment_detail' equipment.id %}" class="btn btn-secondary">Détails</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p>Aucun équipement emprunté</p>
+                    {% endif %}
                 </div>
             </div>
 

@@ -105,10 +105,7 @@
                     <td>{{ equipment.get_location_room_value }}</td>
                     <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
                     <td>{% if equipment.holder %}{{ equipment.holder }}{% else %}Stockage
-                        <form method="post" action="{% url 'retrieve_equipment' equipment.pk %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-success btn-sm">Récupérer</button>
-                        </form>
+
                     {% endif %}</td>
 
                     <td>
@@ -118,6 +115,8 @@
                             <a href="{% url 'equipment_transfer' equipment.pk %}"
                                class="btn btn-sm btn-primary">Transférer</a>
                         {% endif %}
+                        <a href="{% url 'retrieve_equipment' equipment.pk %}"
+                           class="btn btn-sm btn-secondary">Récupérer</a>
                         <a href="{% url 'equipment_update' equipment.pk %}"
                            class="btn btn-sm btn-secondary">Modifier</a>
                         <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
