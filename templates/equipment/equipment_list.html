@@ -44,93 +44,141 @@
             <div class="col">
                 <div class="form-group mr-2">
                     <button type="submit" class="btn btn-primary">Appliquer</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetFilters()">Réinitialiser</button>
+
                 </div>
             </div>
         </div>
         <!-- Filtrage -->
     </form>
 
-    <h3>Equipement loué</h3>
-    <div class="table-responsive">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Salle</th>
-                <th>Propriétaire</th>
-                <th>Détenteur</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for equipment in rented_equipments %}
+    {% if selected_filter or selected_value %}
+        <h3>Équipements filtrés</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
                 <tr>
-                    <td><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></td>
-                    <td>{{ equipment.get_location_room_value }}</td>
-                    <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
-                    <td>{{ equipment.holder }}</td>
-                    <td>
-                        {% if equipment.holder == user %}
-                            <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
-                                stockage</a>
-                            <a href="{% url 'equipment_transfer' equipment.pk %}"
-                               class="btn btn-sm btn-primary">Transférer</a>
-                        {% endif %}
-                        <a href="{% url 'equipment_update' equipment.pk %}"
-                           class="btn btn-sm btn-secondary">Modifier</a>
-                        <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
-                    </td>
+                    <th>Nom</th>
+                    <th>Salle</th>
+                    <th>Propriétaire</th>
+                    <th>Détenteur</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for equipment in equipments %}
+                    <tr>
+                        <td><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></td>
+                        <td>{{ equipment.get_location_room_value }}</td>
+                        <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
+                        <td>{{ equipment.holder }}</td>
+                        <td>
+                            {% if equipment.holder == user %}
+                                <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
+                                    stockage</a>
+                                <a href="{% url 'equipment_transfer' equipment.pk %}"
+                                   class="btn btn-sm btn-primary">Transférer</a>
+                            {% endif %}
+                            <a href="{% url 'equipment_update' equipment.pk %}"
+                               class="btn btn-sm btn-secondary">Modifier</a>
+                            <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
 
-    <h3>Equipement au stockage</h3>
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Salle</th>
-                <th>Propriétaire</th>
-                <th>Détenteur</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for equipment in non_rented_equipments %}
+        <h3>Equipement loué</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
                 <tr>
-                    <td><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></td>
-                    <td>{{ equipment.get_location_room_value }}</td>
-                    <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
-                    <td>{% if equipment.holder %}{{ equipment.holder }}{% else %}Stockage
-
-                    {% endif %}</td>
-
-                    <td>
-                        {% if equipment.holder == user %}
-                            <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
-                                stockage</a>
-                            <a href="{% url 'equipment_transfer' equipment.pk %}"
-                               class="btn btn-sm btn-primary">Transférer</a>
-                        {% endif %}
-                        <a href="{% url 'retrieve_equipment' equipment.pk %}"
-                           class="btn btn-sm btn-secondary">Récupérer</a>
-                        <a href="{% url 'equipment_update' equipment.pk %}"
-                           class="btn btn-sm btn-secondary">Modifier</a>
-                        <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
-                    </td>
+                    <th>Nom</th>
+                    <th>Salle</th>
+                    <th>Propriétaire</th>
+                    <th>Détenteur</th>
+                    <th>Actions</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for equipment in rented_equipments %}
+                    <tr>
+                        <td><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></td>
+                        <td>{{ equipment.get_location_room_value }}</td>
+                        <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
+                        <td>{{ equipment.holder }}</td>
+                        <td>
+                            {% if equipment.holder == user %}
+                                <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
+                                    stockage</a>
+                                <a href="{% url 'equipment_transfer' equipment.pk %}"
+                                   class="btn btn-sm btn-primary">Transférer</a>
+                            {% endif %}
+                            <a href="{% url 'equipment_update' equipment.pk %}"
+                               class="btn btn-sm btn-secondary">Modifier</a>
+                            <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
+        <h3>Equipement au stockage</h3>
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Salle</th>
+                    <th>Propriétaire</th>
+                    <th>Détenteur</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for equipment in non_rented_equipments %}
+                    <tr>
+                        <td><a href="{% url 'equipment_detail' equipment.pk %}">{{ equipment.name }}</a></td>
+                        <td>{{ equipment.get_location_room_value }}</td>
+                        <td>{% if equipment.owner %}{{ equipment.owner }}{% else %}Lycée{% endif %}</td>
+                        <td>{% if equipment.holder %}{{ equipment.holder }}{% else %}Stockage
 
+                        {% endif %}</td>
+
+                        <td>
+                            {% if equipment.holder == user %}
+                                <a href="{% url 'return_to_storage' equipment.id %}" class="btn btn-danger">Retour au
+                                    stockage</a>
+                                <a href="{% url 'equipment_transfer' equipment.pk %}"
+                                   class="btn btn-sm btn-primary">Transférer</a>
+                            {% endif %}
+                            <a href="{% url 'retrieve_equipment' equipment.pk %}"
+                               class="btn btn-sm btn-secondary">Récupérer</a>
+                            <a href="{% url 'equipment_update' equipment.pk %}"
+                               class="btn btn-sm btn-secondary">Modifier</a>
+                            <a href="{% url 'equipment_detail' equipment.pk %}" class="btn btn-sm btn-info">Détails</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% endif %}
 
     <a class="btn btn-primary mt-3" href="{% url 'equipment_create' %}">Créer un Nouvel Équipement</a>
     <script>
+        function resetFilters() {
+            document.getElementById('filter_by').value = '';
+            document.getElementById('filter_value').value = '';
+            document.getElementById('order_by').value = '';
+            // Submit the form to reset filters
+            document.querySelector('form').submit();
+        }
+
         const BudgetChoices = {
             CURRENT_YEAR: "Budget de l’année courante",
             PROJECTS: "Budget projet",

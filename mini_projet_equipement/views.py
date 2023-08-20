@@ -65,10 +65,11 @@ def equipment_list(request):
     equipments = Equipment.objects.all()
 
     rented_equipments = Equipment.objects.exclude(holder_id=storage_holder.id)
-
     non_rented_equipments = Equipment.objects.filter(holder_id=storage_holder.id)
 
-    equipments = apply_order(equipments, selected_order)
+    if selected_filter and selected_value:
+        equipments = apply_filter(equipments, selected_filter, selected_value)
+
 
     all_holders = list(Teacher.objects.values_list('id', flat=True).distinct())
     all_owners = list(Teacher.objects.values_list('id', flat=True).distinct())
@@ -99,9 +100,9 @@ def equipment_list(request):
 
 def apply_filter(queryset, selected_filter, selected_value):
     if selected_filter == 'holder':
-        return queryset.filter(holder=selected_value)
+        return queryset.filter(holder_id=selected_value)
     elif selected_filter == 'owner':
-        return queryset.filter(owner=selected_value)
+        return queryset.filter(owner_id=selected_value)
     elif selected_filter == 'budget':
         if selected_value == BudgetChoices.CURRENT_YEAR.value:
             return queryset.filter(purchase__from_budget='Current Year')
